@@ -4,432 +4,54 @@ from wtforms import TextAreaField, TextField, SelectField, StringField, Password
 from wtforms.validators import DataRequired, Email, InputRequired, Required
 from wtforms.fields.html5 import DateField
 
-# coun=[('Afghanistan','Afghanistan')],[('Albania','Albania')],[('Algeria','Algeria')],[('Andorra','Algeria')],[('Angola','Angola')],[('Antigua and Barbuda','Antigua and Barbuda')],[('Argentina','Argentina')],[('Armenia','Armenia')],[('Australia','Australia')],
-
-# [('Austria','Austria')]
-
-# [('Azerbaijan','Azerbaijan')]
-
-# [('Bahamas','Bahamas')]
-
-# [('Bahrain','Bahrain')]
-
-# [('Bangladesh','Bangladesh')]
-
-# [('Barbados','Barbados')]
-
-# [('Belarus','Belarus')]
-
-# [('Belgium','Belgium')]
-
-# [('Belize','Belize')]
-
-# [('Benin','Benin')]
-
-# [('Bhutan','Bhutan')]
-
-# [('Bolivia','Bolivia')]
-
-# [('Bosnia and Herzegovina','Bosnia and Herzegovina')]
-
-# [('Botswana','Botswana')]
-
-# [('Brazil','Brazil')]
-
-# [('Brunei','Brunei')]
-
-# [('Bulgaria','Bulgaria')]
-
-# [('Burkina Faso','Burkina Faso')]
-
-# [('Burundi','Burundi')]
-
-# [('Denmark','Denmark')]
-
-# Djibouti
-
-# Dominica
-
-# Dominican Republic
-
-# Ecuador
-
-# Egypt
-
-# El Salvador
-
-# Equatorial Guinea
-
-# Eritrea
-
-# Estonia
-
-# Eswatini (formerly Swaziland)
-
-# Ethiopia
-
-# F
-
-# Fiji
-
-# Finland
-
-# France
-
-# G
-
-# Gabon
-
-# Gambia
-
-# Georgia
-
-# Germany
-
-# Ghana
-
-# Greece
-
-# Grenada
-
-# Guatemala
-
-# Guinea
-
-# Guinea-Bissau
-
-# Guyana
-
-# H
-
-# Haiti
-
-# Honduras
-
-# Hungary
-
-# I
-
-# Iceland
-
-# India
-
-# Indonesia
-
-# Iran
-
-# Iraq
-
-# Ireland
-
-# Israel
-
-# Italy
-
-# J
-
-# Jamaica
-
-# Japan
-
-# Jordan
-
-# K
-
-# Kazakhstan
-
-# Kenya
-
-# Kiribati
-
-# Kosovo
-
-# Kuwait
-
-# Kyrgyzstan
-
-# L
-
-# Laos
-
-# Latvia
-
-# Lebanon
-
-# Lesotho
-
-# Liberia
-
-# Libya
-
-# Liechtenstein
-
-# Lithuania
-
-# Luxembourg
-
-# M
-
-# Madagascar
-
-# Malawi
-
-# Malaysia
-
-# Maldives
-
-# Mali
-
-# Malta
-
-# Marshall Islands
-
-# Mauritania
-
-# Mauritius
-
-# Mexico
-
-# Micronesia
-
-# Moldova
-
-# Monaco
-
-# Mongolia
-
-# Montenegro
-
-# Morocco
-
-# Mozambique
-
-# Myanmar (formerly Burma)
-
-# N
-
-# Namibia
-
-# Nauru
-
-# Nepal
-
-# Netherlands
-
-# New Zealand
-
-# Nicaragua
-
-# Niger
-
-# Nigeria
-
-# North Korea
-
-# North Macedonia (formerly Macedonia)
-
-# Norway
-
-# O
-
-# Oman
-
-# P
-
-# Pakistan
-
-# Palau
-
-# Palestine
-
-# Panama
-
-# Papua New Guinea
-
-# Paraguay
-
-# Peru
-
-# Philippines
-
-# Poland
-
-# Portugal
-
- 
-
-# Q
-
-# Qatar
-
-# R
-
-# Romania
-
-# Russia
-
-# Rwanda
-
-# S
-
-# Saint Kitts and Nevis
-
-# Saint Lucia
-
-# Saint Vincent and the Grenadines
-
-# Samoa
-
-# San Marino
-
-# Sao Tome and Principe
-
-# Saudi Arabia
-
-# Senegal
-
-# Serbia
-
-# Seychelles
-
-# Sierra Leone
-
-# Singapore
-
-# Slovakia
-
-# Slovenia
-
-# Solomon Islands
-
-# Somalia
-
-# South Africa
-
-# South Korea
-
-# South Sudan
-
-# Spain
-
-# Sri Lanka
-
-# Sudan
-
-# Suriname
-
-# Sweden
-
-# Switzerland
-
-# Syria
-
-# T
-
-# Taiwan
-
-# Tajikistan
-
-# Tanzania
-
-# Thailand
-
-# Timor-Leste
-
-# Togo
-
-# Tonga
-
-# Trinidad and Tobago
-
-# Tunisia
-
-# Turkey
-
-# Turkmenistan
-
-# Tuvalu
-
-# U
-
-# Uganda
-
-# Ukraine
-
-# United Arab Emirates (UAE)
-
-# United Kingdom (UK)
-
-# United States of America (USA)
-
-# Uruguay
-
-# Uzbekistan
-
-# V
-
-# Vanuatu
-
-# Vatican City (Holy See)
-
-# Venezuela
-
-# Vietnam
-
-# Y
-
-# Yemen
-
-# Z
-
-# Zambia
-
-# [('Zimbabwe','Zimbabwe')]
+coun= [('Afghanistan','Afghanistan') , ('Albania','Albania') , ('Algeria','Algeria') , ('Andorra','Algeria') , ('Angola','Angola') , ('Antigua and Barbuda','Antigua and Barbuda') , ('Argentina','Argentina') , ('Armenia','Armenia') , ('Australia','Australia') , ('Austria','Austria') , ('Azerbaijan','Azerbaijan') , ('Bahamas','Bahamas') , ('Bahrain','Bahrain') , ('Bangladesh','Bangladesh') , ('Barbados','Barbados') , ('Belarus','Belarus') , ('Belgium','Belgium') , ('Belize','Belize') , ('Benin','Benin') , ('Bhutan','Bhutan') , ('Bolivia','Bolivia') , ('Bosnia and Herzegovina','Bosnia and Herzegovina') , ('Botswana','Botswana') , ('Brazil','Brazil') , ('Brunei','Brunei') , ('Bulgaria','Bulgaria') , ('Burkina Faso','Burkina Faso') , ('Burundi','Burundi') , ('Denmark','Denmark') , ('Djibouti','Djibouti') , ('Dominica','Dominica') , ('Dominican Republic','Dominican Republic') , ('Ecuador','Ecuador') , ('Egypt','Egypt') , ('El Salvador','El Salvador') , ('Equatorial Guinea','Equatorial Guinea') , ('Eritrea','Eritrea') , ('Estonia','Estonia') , ('Eswatini (formerly Swaziland)','Eswatini (formerly Swaziland)') , ('Ethiopia','Ethiopia') , ('Fiji','Fiji') , ('Finland','Finland') , ('France','France') , ('Gabon','Gabon') , ('Gambia','Gambia') , ('Georgia','Georgia') , ('Germany','Germany') , ('Ghana','Ghana') , ('Greece','Greece') , ('Grenada','Grenada') , ('Guatemala','Guatemala') , ('Guinea','Guinea') ]
+# ('Guinea-Bissau'.'Guinea-Bissau') , ('Guyana','Guyana') , ('Haiti','Haiti') , ('Honduras','Honduras') , ('Hungary','Hungary') , ('Iceland','Iceland') , ('India','India') , ('Indonesia','Indonesia') , ('Iran','Iran') , ('Iraq','Iraq') , ('Ireland','Ireland') , ('Israel','Israel') , ('Italy','Italy') , ('Jamaica','Jamaica') , ('Japan','Japan') , ('Jordan','Jordan') , ('Kazakhstan','Kazakhstan') , ('Kenya','Kenya') , ('Kiribati','Kiribati') , ('Kosovo','Kosovo') , ('Kuwait','Kuwait') , ('Kyrgyzstan','Kyrgyzstan') , ('Laos','Laos') , ('Latvia','Latvia') , ('Lebanon','Lebanon') , ('Lesotho','Lesotho') , ('Liberia','Liberia') , ('Libya','Libya') , ('Liechtenstein','Liechtenstein') , ('Lithuania','Lithuania') , ('Luxembourg','Luxembourg') , ('Madagascar','Madagascar') , ('Malawi','Malawi') , ('Malaysia','Malaysia') , ('Maldives','Maldives') , ('Mali','Mali') , ('Malta','Malta') , ('Marshall Islands','Marshall Islands') , ('Mauritania','Mauritania') , ('Mauritius','Mauritius') , ('Mexico','Mexico') , ('Micronesia','Micronesia') , ('Moldova','Moldova') , ('Monaco','Monaco') , ('Mongolia','Mongolia') , ('Montenegro','Montenegro')  ('Morocco','Morocco')  ('Mozambique','Mozambique') , ('Myanmar (formerly Burma)','Myanmar (formerly Burma)') , ('Namibia','Namibia') , ('Nauru','Nauru') , ('Nepal','Nepal') , ('Netherlands','Netherlands') , ('New Zealand','New Zealand') , ('Nicaragua','Nicaragua') , ('Niger','Niger')]
+# ('Nigeria','Nigeria') , ('North Korea','North Korea') , ('North Macedonia (formerly Macedonia)','North Macedonia (formerly Macedonia)') , ('Norway','Norway') , ('Oman','Oman') , ('Pakistan','Pakistan') , ('Palau','Palau') , ('Palestine','Palestine') , ('Panama','Panama') , ('Papua New Guinea','Papua New Guinea') , ('Paraguay','Paraguay') , ('Peru','Peru') , ('Philippines','Philippines') , ('Poland','Poland') , ('Portugal','Portugal') , ('Qatar','Qatar') , ('Romania','Romania') , ('Russia','Russia') , ('Rwanda','Rwanda') , ('Saint Kitts and Nevis','Saint Kitts and Nevis') , ('Saint Lucia','Saint Lucia') , ('Saint Vincent and the Grenadines','Saint Vincent and the Grenadines') , ('Samoa','Samoa') , ('San Marino','San Marino') , ('Sao Tome and Principe','Sao Tome and Principe') , ('Saudi Arabia','Saudi Arabia') , ('Senegal','Senegal') , ('Serbia','Serbia') , ('Seychelles','Seychelles') , ('Sierra Leone','Sierra Leone') , ('Singapore','Singapore') , ('Slovakia','Slovakia') , ('Slovenia','Slovenia') , ('Solomon Islands','Solomon Islands') , ('Somalia','Somalia') , ('South Africa','South Africa') , ('South Korea','South Korea') , ('South Sudan','South Sudan') , ('Spain','Spain') , ('Sri Lanka','Sri Lanka') , ('Sudan','Sudan') , ('Suriname','Suriname') , ('Sweden','Sweden') , ('Switzerland','Switzerland') , ('Syria','Syria') , ('Taiwan','Taiwan') , ('Tajikistan','Tajikistan') , ('Tanzania','Tanzania') , ('Thailand','Thailand') , ('Timor-Leste','Timor-Leste') , ('Togo','Togo') , ('Tonga','Tonga') , ('Trinidad and Tobago','Trinidad and Tobago') , ('Tunisia','Tunisia') , ('Turkey','Turkey') , ('Turkmenistan','Turkmenistan') , ('Tuvalu','Tuvalu') , ('Uganda','Uganda') , ('Ukraine','Ukraine') , ('United Arab Emirates','United Arab Emirates') , ('United Kingdom','United Kingdom') , ('United States of America','United States of America') , ('Uruguay','Uruguay') , ('Uzbekistan','Uzbekistan') , ('Vanuatu','Vanuatu') , ('Vatican City','Vatican City') , ('Venezuela','Venezuela') , ('Vietnam','Vietnam') , ('Yemen','Yemen') , ('Zambia','Zambia' ),('Zimbabwe','Zimbabwe') ] 
 class RegForm(FlaskForm):
     firstname = TextField('First Name:', validators = [DataRequired()])
     lastname = TextField('Last Name:', validators = [DataRequired()])
     email = TextField('Email:', validators = [DataRequired(), Email()], render_kw={"placeholder": "e.g. jdoe@example.com"})
     password = PasswordField('Password:', validators = [DataRequired()])
-    con_pass = PasswordField('Confirm Password:', validators=[InputRequired()])
+    con_pass = PasswordField('Confirm Password:', validators= [InputRequired()])
     telephone_no = TextField('Telephone Number:', validators = [DataRequired()])
     street_name = TextField('Street Name:', validators = [DataRequired()])
     city = TextField('City:', validators = [DataRequired()])
-    country = TextField('Country:', validators = [DataRequired()])
+    country = SelectField('Country', choices=coun)
     area_code = TextField('Area Code:', validators = [DataRequired()])
 
 class LoginForm(FlaskForm):
-    e_mail = StringField('Email:', validators=[InputRequired()])
-    password = PasswordField('Password:', validators=[InputRequired()])
+    e_mail = StringField('Email:', validators= [InputRequired()])
+    password = PasswordField('Password:', validators= [InputRequired()])
 
-gen = [('Female', 'Female'), ('Male', 'Male')]
+gen =  [('Female', 'Female'), ('Male', 'Male')] 
 class ModAboutForm(FlaskForm):
     dob = DateField('Date of Birth:', format='%Y-%m-%d')
     gender = SelectField('Gender', choices=gen)
-    nickname = TextField('Nickname:', validators=[InputRequired()])
+    nickname = TextField('Nickname:', validators= [InputRequired()])
 
 class AdminForm(FlaskForm):
-    username = StringField('Username:', validators=[InputRequired()])
-    password = PasswordField('Password:', validators=[InputRequired()])
+    username = StringField('Username:', validators= [InputRequired()])
+    password = PasswordField('Password:', validators= [InputRequired()])
 
 class CPostForm(FlaskForm):
-    description = TextAreaField('Description:', validators=[InputRequired()])
-    photo = FileField('Photo', validators=[FileRequired(),FileAllowed(['jpg', 'png', 'Images only!'])])
+    description = TextAreaField('Description:', validators= InputRequired() )
+    photo = FileField('Photo', validators= [FileRequired(),FileAllowed(['jpg', 'png', 'Images only!'])])
 
 class UppForm(FlaskForm):
-    photo = FileField('Photo', validators=[FileRequired(),FileAllowed(['jpg', 'png', 'Images only!'])])
+    photo = FileField('Photo', validators= [FileRequired(),FileAllowed(['jpg', 'png', 'Images only!'])])
 
 class Addcom_PostForm(FlaskForm):
-    usr_text = StringField('Description', validators=[InputRequired()])
-    pi_d = HiddenField('', validators=[InputRequired()])
+    usr_text = StringField('Description', validators= [InputRequired()])
+    pi_d = HiddenField('', validators= [InputRequired()])
 
 class SearchForm(FlaskForm):
     searchbar = StringField('')
 
 class AddFriendForm(FlaskForm):
-    f_id = HiddenField('', validators=[InputRequired()])
-    g_id = SelectMultipleField('', choices = [('1','Relative'),('2', 'School')])
+    f_id = HiddenField('', validators= [InputRequired()])
+    g_id = SelectMultipleField('', choices =  [('1','Relative'),('2', 'School')])
 class CGroupForm(FlaskForm):
-    groupname = StringField('Group Name', validators=[InputRequired()])
+    groupname = StringField('Group Name', validators= [InputRequired()])
 
 class GroupForm(FlaskForm):
     groupsearch = StringField('')
