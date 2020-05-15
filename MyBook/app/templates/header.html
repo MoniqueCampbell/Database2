@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <a class="navbar-brand" href="{{ url_for('profileuserid',userid=userid) }}">My Book</a>
+  <a class="navbar-brand" href="{{ url_for('vpost',userid=userid) }}">Post</a>
+  <a class="navbar-brand" href="{{ url_for('vfriend',userid=userid) }}">Friends</a>
+  <a class="navbar-brand" href="{{ url_for('groups',userid=userid) }}">Groups</a>
+  <a class="navbar-brand" href="{{ url_for('login') }}">Logout</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+       
+    </ul>
+  </div>
+</nav>
