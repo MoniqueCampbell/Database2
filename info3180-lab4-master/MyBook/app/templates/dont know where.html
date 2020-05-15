@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <h1 class="page-header">Create Post</h1>
+    {% include 'flash_messages.html' %}
+    <form action="{{ url_for('cpost',userid=userid) }}" method="post">
+  {{ form.csrf_token}}
+      <div class="form-group">
+        {{ form.usr_text.label}}
+        {{ form.usr_text(class='form-control', placeholder="Enter your comment")}}
+      </div>
+      <button type="submit" name="submit" class="btn btn-primary btn-block">Create Post</button>
+    </form>
+  </div>
+{% endblock %}
+
+
+<form action="{{ url_for('addfriend',userid=userid) }}" method="post">
+    {{ form.csrf_token}}
+      <div class="form-group">
+        {{ form.f_id(class='form-control',value=i[0])}}
+      </div>
+    <button type="submit" name="submit" class="btn btn-primary btn-block">Add Comment</button>
+  
+  </form>
+</div>
+</div>
