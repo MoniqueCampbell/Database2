@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id = "holder">
+
+<h1>PROFILE</h1>
+
+<form action="{{ url_for('profileuserid',userid=userid) }}" method="post">
+{{ form.csrf_token}}
+      <div class="form-group">
+        {{ form.searchbar(class='form-control', placeholder="Search for friend")}}
+      </div>
+	<button type="submit" name="submit" class="btn btn-primary btn-block">Search</button>
+	</form>
+
+
+ <br>  <br><h2>{{firstname}} {{lastname}} <br>Email Address: {{email}}</h2>
+
+{%for i in [dire]%}
+	<img src="{{url_for('static',filename="" + i) }}"/>
+{%endfor%} 
+
+</div>
+<div id = "Bio">
+<div id = "buttons">
+
+<a href="{{url_for('index')}}" class="btn btn-primary btn-block">Profiles</a>
+<a href="{{url_for('upp',userid=userid)}}" class="btn btn-primary btn-block">Update Profile Picture</a>
+<a href="{{url_for('cpost',userid=userid)}}" class="btn btn-primary btn-block">Create Post</a>
+<a href="{{url_for('vpost',userid=userid)}}" class="btn btn-primary btn-block">View Post(s)</a>
+<a href="{{url_for('aboutuserid',userid=userid)}}" class="btn btn-primary btn-block">View About</a>
+<a href="{{url_for('modaboutuserid',userid=userid)}}" class="btn btn-primary btn-block">Modify About</a>
+<a href="{{url_for('vfriend',userid=userid)}}" class="btn btn-primary btn-block">View Friends</a>
+<a href="{{url_for('groups',userid=userid)}}" class="btn btn-primary btn-block">Groups</a>
+    </script>
+</div>
+</div>
+
+{% endblock %}

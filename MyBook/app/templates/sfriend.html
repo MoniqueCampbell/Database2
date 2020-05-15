@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id = "holder">
+
+<h1>Search Result(s)<h1>
+
+{%for i in fren_info%}
+	<img src="{{url_for('static',filename="" + i[3]) }}"/>
+
+	<p>{{i[1]}} {{i[2]}}</p>
+	<form action="{{ url_for('addfriend',userid=userid) }}" method="post">
+    {{ form.csrf_token}}
+      <div class="form-group">
+
+	<input type="hidden" value={{i[0]}} name="Encrypt"/>
+	<input type="submit" value="Add Friend" name="Decrypt"/>  <select name="group">
+      {% for activity in ['Relative','School','Work'] %}
+          <option value="{{ activity }}">{{ activity }}</option>
+      {% endfor %}
+      </select>
+	
+</div>
+</form>
+{%endfor%}
+{% endblock %}
