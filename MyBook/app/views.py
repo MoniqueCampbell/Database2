@@ -952,10 +952,12 @@ def admin():
     if request.method == 'POST' and form.validate_on_submit():
         user_name = request.form['username']
         pass_word = request.form['password']
+        form = SearchForm()
+        dire = 'uploads/default.png'
         if user_name=="Database" and pass_word=="Database":
-            return render_template('adminpage.html', form = form)
+            return render_template('adminpage.html', dire=dire, form = form, userid=10**12)
     flash('Unauthorized', 'success')
-    return render_template('admin.html', form = form)
+    return render_template('admin.html', dire = dire, form = form, userid=10**12)
 
 ###
 # The functions below should be applicable to all Flask apps.
