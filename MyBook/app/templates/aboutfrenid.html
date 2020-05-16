@@ -3,6 +3,8 @@
 {% block main %}
 <div id = "holder">
 
+<input type="hidden" value={{fid}} name="Friendid"/>
+
 <h1>ABOUT<h1>
 
  <p>Nickname: {{profile[0][2]}} 		</p>
@@ -11,8 +13,8 @@
 
  <h1>Mailing Address:</h1>
  {%for a in address%}
- 	<p>{{a[0]}}, </p>
- 	<p>{{a[1]}}, </p>
+ 	<p>{{a[0]}} </p>
+ 	<p>{{a[1]}} </p>
  	<p>{{a[2]}}  </p>
 {%endfor%}
 

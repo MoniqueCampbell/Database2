@@ -7,7 +7,13 @@
 <p>{{fruser[2]}}</p>
 <img src="{{url_for('static',filename="" + image) }}"/>
 
-<a href="{{url_for('aboutfrenid',userid=fid)}}" class="btn btn-primary btn-block"> About</a>
+<form action="{{url_for('aboutfrenid',userid=userid)}}" method="post">
+	<input type="hidden" value={{fid}} name="Friendid"/>
+<button type="submit" name="submit" class="btn btn-primary btn-block">About</button>
+</form>
+
+
+</form>
 
 <h1>{{fruser[0]}} {{fruser[1]}}'s Post(s)<h1>
 
@@ -23,8 +29,8 @@
       <div class="form-group">
         {{ form.usr_text(class='form-control', placeholder="Enter your comment")}}
         {{ form.pi_d(class='form-control',value=i[0])}}
-		<input type="hidden" value={{fid}} name="Friendid"/>
 		<input type="hidden" value={{i[0]}} name="Postid"/>
+		<input type="hidden" value={{fid}} name="Friendid"/>
       </div>
 	<button type="submit" name="submit" class="btn btn-primary btn-block">Add Comment</button>
 	</form>

@@ -525,42 +525,46 @@ def aboutuserid(userid):
     if len(p_result)==0:
         #flash('Modify About First','error')
         #return redirect(url_for('modaboutuserid',userid=userid))
-        p_result = [""]*10
+        p_result = [""]*3
     elif len(a_result)==0:
-        a_result = [""]*10
+        a_result = [""]*3
     elif len(t_result)==0:
-        t_result = [""]*10
+        t_result = [""]*3
     else:
         print(p_result)
-        return render_template('aboutuserid.html',userid=userid, profile=p_result, address=a_result, phone=t_result)
+    return render_template('aboutuserid.html',userid=userid, profile=p_result, address=a_result, phone=t_result)
 
-@app.route('/aboutfrenid/<int:userid>')
+@app.route('/aboutfrenid/<int:userid>', methods=['GET', 'POST'])
 def aboutfrenid(userid):
-    cur = mysql.connection.cursor()
-    #Search db for country
-    cur.execute("SELECT street_name, city, country FROM Address WHERE user_id='{}'".format(userid))
-    a_result=cur.fetchall()
+    if request.method == 'POST':
+        frenid = request.form["Friendid"]
 
-    #Search db Profile
-    cur.execute("SELECT dob, gender, nickname FROM Profile WHERE user_id='{}'".format(userid))
-    p_result=cur.fetchall()
+        cur = mysql.connection.cursor()
+        #Search db for country
+        cur.execute("SELECT street_name, city, country FROM Address WHERE user_id='{}'".format(frenid))
+        a_result=cur.fetchall()
 
-    #Search db Profile
-    cur.execute("SELECT area_code, telephone_no FROM Phone WHERE user_id='{}'".format(userid))
-    t_result=cur.fetchall()
+        #Search db Profile
+        cur.execute("SELECT dob, gender, nickname FROM Profile WHERE user_id='{}'".format(frenid))
+        p_result=cur.fetchall()
+
+        #Search db Profile
+        cur.execute("SELECT area_code, telephone_no FROM Phone WHERE user_id='{}'".format(frenid))
+        t_result=cur.fetchall()
 
 
-    if len(p_result)==0:
-        #flash('Modify About First','error')
-        #return redirect(url_for('modaboutuserid',userid=userid))
-        p_result = [""]*10
-    elif len(a_result)==0:
-        a_result = [""]*10
-    elif len(t_result)==0:
-        t_result = [""]*10
-    else:
+        if len(p_result)==0:
+            #flash('Modify About First','error')
+            #return redirect(url_for('modaboutuserid',userid=userid))
+            p_result = [""]*3
+        elif len(a_result)==0:
+            a_result = [""]*3
+        elif len(t_result)==0:
+            t_result = [""]*3
+        
         print(p_result)
-        return render_template('aboutfrenid.html',userid=userid, profile=p_result, address=a_result, phone=t_result)
+        return render_template('aboutfrenid.html',userid=userid, fid=frenid, profile=p_result, address=a_result, phone=t_result)
+        #return redirect(url_for('vfrenprofile', userid = userid))
 
 @app.route('/modaboutuserid/<int:userid>',methods=['GET', 'POST'])
 def modaboutuserid(userid):
