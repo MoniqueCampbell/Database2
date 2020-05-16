@@ -3,16 +3,13 @@
 {% block main %}
 <div id = "holder">
 
-<h1>{{fruser[0]}} {{fruser[1]}}'s Profile<h1>
+<h1>{{fruser[0]}} {{fruser[1]}}'s Profile</h1> 
 <p>{{fruser[2]}}</p>
+<img src="{{url_for('static',filename="" + image) }}"/>
 
-<h1>About<h1>
-<p>Nickname: {{frprofile[0]}}</p>
-<p>Gender:   {{frprofile[1]}}</p>
-<p>D.O.B:    {{frprofile[2]}}</p>
+<a href="{{url_for('aboutfrenid',userid=fid)}}" class="btn btn-primary btn-block"> About</a>
 
 <h1>{{fruser[0]}} {{fruser[1]}}'s Post(s)<h1>
-
 
 {%for i in pos_t%}
 	{%for m in i[4]%}
@@ -38,7 +35,6 @@
 
 {%endfor%} 
 
-</div>
 </div>
 
 {% endblock %}

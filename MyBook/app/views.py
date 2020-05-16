@@ -510,30 +510,57 @@ def mygroups(userid):
 def aboutuserid(userid):
     cur = mysql.connection.cursor()
     #Search db for country
-    cur.execute("SELECT country FROM Address WHERE user_id='{}'".format(userid))
-    c_result=cur.fetchall()
+    cur.execute("SELECT street_name, city, country FROM Address WHERE user_id='{}'".format(userid))
+    a_result=cur.fetchall()
 
-    #Search db for dob
-    cur.execute("SELECT dob FROM Profile WHERE user_id='{}'".format(userid))
-    d_result=cur.fetchall()
+    #Search db Profile
+    cur.execute("SELECT dob, gender, nickname FROM Profile WHERE user_id='{}'".format(userid))
+    p_result=cur.fetchall()
 
-    #Search db for gender
-    cur.execute("SELECT gender FROM Profile WHERE user_id='{}'".format(userid))
-    g_result=cur.fetchall()
+    #Search db Profile
+    cur.execute("SELECT area_code, telephone_no FROM Phone WHERE user_id='{}'".format(userid))
+    t_result=cur.fetchall()
 
-    #Search db for nickname
-    cur.execute("SELECT nickname FROM Profile WHERE user_id='{}'".format(userid))
-    n_result=cur.fetchall()
 
-    if len(d_result)==0:
-        flash('Modify About First','error')
-        return redirect(url_for('modaboutuserid',userid=userid))
+    if len(p_result)==0:
+        #flash('Modify About First','error')
+        #return redirect(url_for('modaboutuserid',userid=userid))
+        p_result = [""]*10
+    elif len(a_result)==0:
+        a_result = [""]*10
+    elif len(t_result)==0:
+        t_result = [""]*10
     else:
-        country = c_result[0][0]
-        dob = d_result[0][0]
-        gender = g_result[0][0]
-        nickname = n_result[0][0]
-        return render_template('aboutuserid.html',userid=userid,country=country,dob=dob,gender=gender,nickname=nickname)
+        print(p_result)
+        return render_template('aboutuserid.html',userid=userid, profile=p_result, address=a_result, phone=t_result)
+
+@app.route('/aboutfrenid/<int:userid>')
+def aboutfrenid(userid):
+    cur = mysql.connection.cursor()
+    #Search db for country
+    cur.execute("SELECT street_name, city, country FROM Address WHERE user_id='{}'".format(userid))
+    a_result=cur.fetchall()
+
+    #Search db Profile
+    cur.execute("SELECT dob, gender, nickname FROM Profile WHERE user_id='{}'".format(userid))
+    p_result=cur.fetchall()
+
+    #Search db Profile
+    cur.execute("SELECT area_code, telephone_no FROM Phone WHERE user_id='{}'".format(userid))
+    t_result=cur.fetchall()
+
+
+    if len(p_result)==0:
+        #flash('Modify About First','error')
+        #return redirect(url_for('modaboutuserid',userid=userid))
+        p_result = [""]*10
+    elif len(a_result)==0:
+        a_result = [""]*10
+    elif len(t_result)==0:
+        t_result = [""]*10
+    else:
+        print(p_result)
+        return render_template('aboutfrenid.html',userid=userid, profile=p_result, address=a_result, phone=t_result)
 
 @app.route('/modaboutuserid/<int:userid>',methods=['GET', 'POST'])
 def modaboutuserid(userid):
@@ -627,7 +654,6 @@ def vfrenprofilecom(userid):
         frenid = request.form["Friendid"]
         p_id = request.form["Postid"]
 
-        print(("HHHHHHH:", frenid ,request.form))
 
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO Comment(post_id,usr_text,com_date,com_time) VALUES ({},'{}','{}','{}')".format(p_id,comm,comdate,comtime))
@@ -672,15 +698,31 @@ def vfrenprofilecom(userid):
         result=cur.fetchall()
         fren_user = result[0]
 
-        cur.execute("SELECT nickname, gender, dob FROM Profile WHERE user_id={}".format(frenid))
+        cur.execute("SELECT nickname, gender, dob, profile_id FROM Profile WHERE user_id={}".format(frenid))
         result=cur.fetchall()
         fren_profile = result[0]
+        profile1id = fren_profile[3]
+        dire=""
+        if len(result)>0:
+            profile1id = fren_profile[3]
+            #profile1id = result[0][0]
+
+            cur.execute("SELECT image_id FROM Profile_pic WHERE profile_id='{}'".format(profile1id))
+            result=cur.fetchall()
+
+            if len(result)>0:
+                image1id = result[0][0]
+
+                cur.execute("SELECT directory FROM Image WHERE image_id='{}'".format(image1id))
+                if len(result)>0:
+                    result=cur.fetchall()
+                    dire = result[0][0]
 
         mysql.connection.commit()
         form = Addcom_PostForm()
         #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
 
-        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile)
+        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image=dire)
     return redirect(url_for('vfrenprofile', userid = userid))
 
 
@@ -725,15 +767,30 @@ def vfrenprofile(userid):
         result=cur.fetchall()
         fren_user = result[0]
 
-        cur.execute("SELECT nickname, gender, dob FROM Profile WHERE user_id={}".format(frenid))
+        cur.execute("SELECT nickname, gender, dob, profile_id FROM Profile WHERE user_id={}".format(frenid))
         result=cur.fetchall()
         fren_profile = result[0]
+        dire=""
+        if len(result)>0:
+            profile1id = fren_profile[3]
+            #profile1id = result[0][0]
+
+            cur.execute("SELECT image_id FROM Profile_pic WHERE profile_id='{}'".format(profile1id))
+            result=cur.fetchall()
+
+            if len(result)>0:
+                image1id = result[0][0]
+
+                cur.execute("SELECT directory FROM Image WHERE image_id='{}'".format(image1id))
+                if len(result)>0:
+                    result=cur.fetchall()
+                    dire = result[0][0]
 
         mysql.connection.commit()
         form = Addcom_PostForm()
         #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
 
-        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile)
+        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image= dire)
     return redirect(url_for('vfrenprofile', userid = userid))
 
 @app.route('/vpost/<int:userid>', methods=['GET', 'POST'])
