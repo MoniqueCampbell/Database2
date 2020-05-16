@@ -24,15 +24,16 @@
 <div id = "Bio">
 <div id = "buttons">
 
-<a href="{{url_for('index')}}" class="btn btn-primary btn-block">Profiles</a>
-<a href="{{url_for('upp',userid=userid)}}" class="btn btn-primary btn-block">Update Profile Picture</a>
-<a href="{{url_for('cpost',userid=userid)}}" class="btn btn-primary btn-block">Create Post</a>
-<a href="{{url_for('vpost',userid=userid)}}" class="btn btn-primary btn-block">View Post(s)</a>
-<a href="{{url_for('aboutuserid',userid=userid)}}" class="btn btn-primary btn-block">View About</a>
-<a href="{{url_for('modaboutuserid',userid=userid)}}" class="btn btn-primary btn-block">Modify About</a>
-<a href="{{url_for('vfriend',userid=userid)}}" class="btn btn-primary btn-block">View Friends</a>
+
+<a href="{{url_for('vfriend',userid=userid)}}" class="btn btn-primary btn-block">Friends</a>
 <a href="{{url_for('groups',userid=userid)}}" class="btn btn-primary btn-block">Groups</a>
     </script>
+<a href="{{url_for('cpost',userid=userid)}}" class="btn btn-primary btn-block">Create Post</a>
+<a href="{{url_for('vpost',userid=userid)}}" class="btn btn-primary btn-block">My Post(s)</a>
+<a href="{{url_for('upp',userid=userid)}}" class="btn btn-primary btn-block">Update Profile Picture</a>
+<a href="{{url_for('aboutuserid',userid=userid)}}" class="btn btn-primary btn-block">View About</a>
+<a href="{{url_for('modaboutuserid',userid=userid)}}" class="btn btn-primary btn-block">Modify About</a>
+
 </div>
 </div>
 
