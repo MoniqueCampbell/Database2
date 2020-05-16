@@ -3,7 +3,16 @@
 {% block main %}
 <div id = "holder">
 
-<h1>My Post(s)<h1>
+<h1>{{fruser[0]}} {{fruser[1]}}'s Profile<h1>
+<p>{{fruser[2]}}</p>
+
+<h1>About<h1>
+<p>Nickname: {{frprofile[0]}}</p>
+<p>Gender:   {{frprofile[1]}}</p>
+<p>D.O.B:    {{frprofile[2]}}</p>
+
+<h1>{{fruser[0]}} {{fruser[1]}}'s Post(s)<h1>
+
 
 {%for i in pos_t%}
 	{%for m in i[4]%}
@@ -12,13 +21,13 @@
 	{%endfor%} 
 	<p>Description: {{i[1]}} {{i[2]}} {{i[3]}}</p>
 
-	<form action="{{ url_for('vpost',userid=userid) }}" method="post">
+	<form action="{{ url_for('vfrenprofilecom',userid=userid) }}" method="post">
   	{{ form.csrf_token}}
       <div class="form-group">
         {{ form.usr_text(class='form-control', placeholder="Enter your comment")}}
         {{ form.pi_d(class='form-control',value=i[0])}}
-		
-        <!-- <input type="hidden" id="status" name="status" value={{i[3]}}/> -->
+		<input type="hidden" value={{fid}} name="Friendid"/>
+		<input type="hidden" value={{i[0]}} name="Postid"/>
       </div>
 	<button type="submit" name="submit" class="btn btn-primary btn-block">Add Comment</button>
 	</form>

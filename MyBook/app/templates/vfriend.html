@@ -6,7 +6,7 @@
 <h1>Friend(s) List<h1>
 
 {%for i in fren_stuff%}
-	<form action="{{ url_for('vfrenprofile',userid=userid) }}" method="post">
+<form action="{{ url_for('vfrenprofile',userid=userid) }}" method="post">
 
 	<img src="{{url_for('static',filename="" + i[3]) }}"/>
 
