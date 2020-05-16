@@ -6,9 +6,17 @@
 <h1>Friend(s) List<h1>
 
 {%for i in fren_stuff%}
+<form action="{{ url_for('vfrenprofile',userid=userid) }}" method="post">
+
 	<img src="{{url_for('static',filename="" + i[3]) }}"/>
 
 	<p>{{i[1]}} {{i[2]}}</p>
-	
+
+	<input type="hidden" value={{i[0]}} name="Friendid"/> 
+
+	<button type="submit" name="submit" class="btn btn-primary btn-block">View Profile 
+	</button>
+</form>
 {%endfor%}
+
 {% endblock %}

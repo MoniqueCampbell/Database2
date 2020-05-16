@@ -333,16 +333,127 @@ def joingroup(userid):
         print(" ")
     return redirect(url_for('groups', userid = userid)) 
 
-@app.route('/grouppost/<int:userid>',methods=['GET', 'POST'])                
-def grouppost(userid):
+
+@app.route('/dgroupcom/<int:userid>',methods=['GET', 'POST'])                
+def dgroupcom(userid):
     if request.method =='POST':
+
+        comdate = datetime.today().strftime('%Y-%m-%d')
+        comtime = datetime.now().strftime("%H:%M:%S")
+
+        comm = request.form['usr_text']
         g_id = request.form.get('Encrypt')
-        joindate = datetime.today().strftime('%Y-%m-%d')
+        p_id = request.form.get('Postid')
+
 
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO joins(user_id, group_id, join_date) VALUES (%s ,%s, %s)", (userid, g_id,joindate))
+        cur.execute("INSERT INTO Comment(post_id,usr_text,com_date,com_time) VALUES ({},'{}','{}','{}')".format(p_id,comm,comdate,comtime))
+        cur.execute("SELECT com_id FROM Comment WHERE com_date='{}' AND com_time='{}' AND usr_text='{}'".format(comdate,comtime,comm))
+        co_result=cur.fetchall()
+        comid = co_result[0][0]
+        cur.execute("INSERT INTO Commented(user_id,com_id,post_id) VALUES (%s,%s,%s)", (userid,comid,p_id)) 
         mysql.connection.commit()
-        return redirect(url_for('groups', userid = userid))  
+
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT post_id FROM belongs WHERE group_id={}".format(g_id))
+        result=cur.fetchall()
+        post_ids=result
+        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM belongs WHERE group_id={}) ORDER BY post_date DESC, post_time DESC".format(g_id))
+        posts=cur.fetchall()
+
+        info = []
+        for post in posts:
+            doc =[]
+            pid, des, date, time = post
+            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
+            images = cur.fetchall()
+            pics = []
+            for image in images:
+                dr = image[0]
+                pics.append(dr)
+
+
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            comments = cur.fetchall()
+            words = []
+            for comment in comments:
+                cr = comment
+                words.append(cr)    
+
+            doc = [pid, des, date, time, pics, words]       
+            info.append(doc)
+
+        cur.execute("SELECT group_name FROM Group1 WHERE group_id={}".format(g_id))
+        gname = cur.fetchall()
+        gname = gname[0][0]
+        info.append(g_id)
+        info.append(gname)
+
+        mysql.connection.commit()
+        form = Addcom_PostForm()
+        #joindate = datetime.today().strftime('%Y-%m-%d')
+
+        #cur = mysql.connection.cursor()
+        #cur.execute("INSERT INTO joins(user_id, group_id, join_date) VALUES (%s ,%s, %s)", (userid, g_id,joindate))
+        #mysql.connection.commit()
+        return render_template('dgroup.html', form = form, pos_t=info,userid=userid)  
+
+    elif request.method =='GET':
+        print(" ")
+    return redirect(url_for('groups', userid = userid))
+
+
+
+@app.route('/dgroup/<int:userid>',methods=['GET', 'POST'])                
+def dgroup(userid):
+    if request.method =='POST':
+        g_id = request.form.get('Encrypt')
+
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT post_id FROM belongs WHERE group_id={}".format(g_id))
+        result=cur.fetchall()
+        post_ids=result
+        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM belongs WHERE group_id={}) ORDER BY post_date DESC, post_time DESC".format(g_id))
+        posts=cur.fetchall()
+
+        info = []
+        for post in posts:
+            doc =[]
+            pid, des, date, time = post
+            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
+            images = cur.fetchall()
+            pics = []
+            for image in images:
+                dr = image[0]
+                pics.append(dr)
+
+
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            comments = cur.fetchall()
+            words = []
+            for comment in comments:
+                cr = comment
+                words.append(cr)    
+
+            doc = [pid, des, date, time, pics, words]       
+            info.append(doc)
+
+        cur.execute("SELECT group_name FROM Group1 WHERE group_id={}".format(g_id))
+        gname = cur.fetchall()
+        gname = gname[0][0]
+        info.append(g_id)
+        info.append(gname)
+
+        mysql.connection.commit()
+        form = Addcom_PostForm()
+        #joindate = datetime.today().strftime('%Y-%m-%d')
+
+        #cur = mysql.connection.cursor()
+        #cur.execute("INSERT INTO joins(user_id, group_id, join_date) VALUES (%s ,%s, %s)", (userid, g_id,joindate))
+        #mysql.connection.commit()
+        return render_template('dgroup.html', form = form, pos_t=info,userid=userid)  
 
     elif request.method =='GET':
         print(" ")
@@ -399,30 +510,61 @@ def mygroups(userid):
 def aboutuserid(userid):
     cur = mysql.connection.cursor()
     #Search db for country
-    cur.execute("SELECT country FROM Address WHERE user_id='{}'".format(userid))
-    c_result=cur.fetchall()
+    cur.execute("SELECT street_name, city, country FROM Address WHERE user_id='{}'".format(userid))
+    a_result=cur.fetchall()
 
-    #Search db for dob
-    cur.execute("SELECT dob FROM Profile WHERE user_id='{}'".format(userid))
-    d_result=cur.fetchall()
+    #Search db Profile
+    cur.execute("SELECT dob, gender, nickname FROM Profile WHERE user_id='{}'".format(userid))
+    p_result=cur.fetchall()
 
-    #Search db for gender
-    cur.execute("SELECT gender FROM Profile WHERE user_id='{}'".format(userid))
-    g_result=cur.fetchall()
+    #Search db Profile
+    cur.execute("SELECT area_code, telephone_no FROM Phone WHERE user_id='{}'".format(userid))
+    t_result=cur.fetchall()
 
-    #Search db for nickname
-    cur.execute("SELECT nickname FROM Profile WHERE user_id='{}'".format(userid))
-    n_result=cur.fetchall()
 
-    if len(d_result)==0:
-        flash('Modify About First','error')
-        return redirect(url_for('modaboutuserid',userid=userid))
+    if len(p_result)==0:
+        #flash('Modify About First','error')
+        #return redirect(url_for('modaboutuserid',userid=userid))
+        p_result = [""]*3
+    elif len(a_result)==0:
+        a_result = [""]*3
+    elif len(t_result)==0:
+        t_result = [""]*3
     else:
-        country = c_result[0][0]
-        dob = d_result[0][0]
-        gender = g_result[0][0]
-        nickname = n_result[0][0]
-        return render_template('aboutuserid.html',userid=userid,country=country,dob=dob,gender=gender,nickname=nickname)
+        print(p_result)
+    return render_template('aboutuserid.html',userid=userid, profile=p_result, address=a_result, phone=t_result)
+
+@app.route('/aboutfrenid/<int:userid>', methods=['GET', 'POST'])
+def aboutfrenid(userid):
+    if request.method == 'POST':
+        frenid = request.form["Friendid"]
+
+        cur = mysql.connection.cursor()
+        #Search db for country
+        cur.execute("SELECT street_name, city, country FROM Address WHERE user_id='{}'".format(frenid))
+        a_result=cur.fetchall()
+
+        #Search db Profile
+        cur.execute("SELECT dob, gender, nickname FROM Profile WHERE user_id='{}'".format(frenid))
+        p_result=cur.fetchall()
+
+        #Search db Profile
+        cur.execute("SELECT area_code, telephone_no FROM Phone WHERE user_id='{}'".format(frenid))
+        t_result=cur.fetchall()
+
+
+        if len(p_result)==0:
+            #flash('Modify About First','error')
+            #return redirect(url_for('modaboutuserid',userid=userid))
+            p_result = [""]*3
+        elif len(a_result)==0:
+            a_result = [""]*3
+        elif len(t_result)==0:
+            t_result = [""]*3
+        
+        print(p_result)
+        return render_template('aboutfrenid.html',userid=userid, fid=frenid, profile=p_result, address=a_result, phone=t_result)
+        #return redirect(url_for('vfrenprofile', userid = userid))
 
 @app.route('/modaboutuserid/<int:userid>',methods=['GET', 'POST'])
 def modaboutuserid(userid):
@@ -502,18 +644,35 @@ def cpost(userid):
         return redirect(url_for('vpost', userid = userid))
     return redirect(url_for('index'))
 
+@app.route('/vfrenprofilecom/<int:userid>',methods=['GET','POST'])
+def vfrenprofilecom(userid):
+    if request.method == 'POST':
+        
 
-@app.route('/vpost/<int:userid>', methods=['GET', 'POST'])
-def vpost(userid):
-    if request.method == 'GET':
-    
+
+        comdate = datetime.today().strftime('%Y-%m-%d')
+        comtime = datetime.now().strftime("%H:%M:%S")
+
+        comm = request.form['usr_text']
+
+        frenid = request.form["Friendid"]
+        p_id = request.form["Postid"]
+
+
         cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO Comment(post_id,usr_text,com_date,com_time) VALUES ({},'{}','{}','{}')".format(p_id,comm,comdate,comtime))
+        cur.execute("SELECT com_id FROM Comment WHERE com_date='{}' AND com_time='{}' AND usr_text='{}'".format(comdate,comtime,comm))
+        co_result=cur.fetchall()
+        comid = co_result[0][0]
+        cur.execute("INSERT INTO Commented(user_id,com_id,post_id) VALUES (%s,%s,%s)", (userid,comid,p_id)) 
+        mysql.connection.commit()
 
-        cur.execute("SELECT post_id FROM Submits WHERE user_id='{}'".format(userid))
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(frenid))
         result=cur.fetchall()
         post_ids=result
-
-        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id='{}') ORDER BY post_date DESC, post_time DESC".format(userid))
+        print((frenid,post_ids))
+        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(frenid))
         posts=cur.fetchall()
 
         info = []
@@ -528,7 +687,142 @@ def vpost(userid):
                 pics.append(dr)
 
 
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {})".format(pid))
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            comments = cur.fetchall()
+            words = []
+            for comment in comments:
+                cr = comment
+                words.append(cr)    
+
+
+            doc = [pid, des, date, time, pics, words]       
+            info.append(doc)
+
+        cur.execute("SELECT firstname, lastname, email FROM User WHERE user_id={}".format(frenid))
+        result=cur.fetchall()
+        fren_user = result[0]
+
+        cur.execute("SELECT nickname, gender, dob, profile_id FROM Profile WHERE user_id={}".format(frenid))
+        result=cur.fetchall()
+        fren_profile = result[0]
+        profile1id = fren_profile[3]
+        dire=""
+        if len(result)>0:
+            profile1id = fren_profile[3]
+            #profile1id = result[0][0]
+
+            cur.execute("SELECT image_id FROM Profile_pic WHERE profile_id='{}'".format(profile1id))
+            result=cur.fetchall()
+
+            if len(result)>0:
+                image1id = result[0][0]
+
+                cur.execute("SELECT directory FROM Image WHERE image_id='{}'".format(image1id))
+                if len(result)>0:
+                    result=cur.fetchall()
+                    dire = result[0][0]
+
+        mysql.connection.commit()
+        form = Addcom_PostForm()
+        #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
+
+        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image=dire)
+    return redirect(url_for('vfrenprofile', userid = userid))
+
+
+@app.route('/vfrenprofile/<int:userid>',methods=['GET','POST'])
+def vfrenprofile(userid):
+    if request.method == 'POST':
+        #frenid = request.form.get("Frendid")
+        frenid = request.form["Friendid"]
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(frenid))
+        result=cur.fetchall()
+        post_ids=result
+        print((frenid,post_ids))
+        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(frenid))
+        posts=cur.fetchall()
+
+        info = []
+        for post in posts:
+            doc =[]
+            pid, des, date, time = post
+            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
+            images = cur.fetchall()
+            pics = []
+            for image in images:
+                dr = image[0]
+                pics.append(dr)
+
+
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            comments = cur.fetchall()
+            words = []
+            for comment in comments:
+                cr = comment
+                words.append(cr)    
+
+
+            doc = [pid, des, date, time, pics, words]       
+            info.append(doc)
+
+        cur.execute("SELECT firstname, lastname, email FROM User WHERE user_id={}".format(frenid))
+        result=cur.fetchall()
+        fren_user = result[0]
+
+        cur.execute("SELECT nickname, gender, dob, profile_id FROM Profile WHERE user_id={}".format(frenid))
+        result=cur.fetchall()
+        fren_profile = result[0]
+        dire=""
+        if len(result)>0:
+            profile1id = fren_profile[3]
+            #profile1id = result[0][0]
+
+            cur.execute("SELECT image_id FROM Profile_pic WHERE profile_id='{}'".format(profile1id))
+            result=cur.fetchall()
+
+            if len(result)>0:
+                image1id = result[0][0]
+
+                cur.execute("SELECT directory FROM Image WHERE image_id='{}'".format(image1id))
+                if len(result)>0:
+                    result=cur.fetchall()
+                    dire = result[0][0]
+
+        mysql.connection.commit()
+        form = Addcom_PostForm()
+        #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
+
+        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image= dire)
+    return redirect(url_for('vfrenprofile', userid = userid))
+
+@app.route('/vpost/<int:userid>', methods=['GET', 'POST'])
+def vpost(userid):
+    if request.method == 'GET':
+    
+        cur = mysql.connection.cursor()
+
+        cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(userid))
+        result=cur.fetchall()
+        post_ids=result
+
+        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(userid))
+        posts=cur.fetchall()
+
+        info = []
+        for post in posts:
+            doc =[]
+            pid, des, date, time = post
+            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
+            images = cur.fetchall()
+            pics = []
+            for image in images:
+                dr = image[0]
+                pics.append(dr)
+
+
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
             comments = cur.fetchall()
             words = []
             for comment in comments:
@@ -540,7 +834,7 @@ def vpost(userid):
             info.append(doc)
         mysql.connection.commit()
         form = Addcom_PostForm()
-        return render_template('vpost.html', form = form,pos_t=info,userid=userid)
+        return render_template('vpost.html', form = form,pos_t=info, userid=userid)
 
     form = Addcom_PostForm()
     if request.method == 'POST' and form.validate_on_submit():
