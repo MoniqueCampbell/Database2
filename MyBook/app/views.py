@@ -313,7 +313,7 @@ def groups(userid):
         mysql.connection.commit()
 
         info.sort(key=lambda x:x[1])
-        return render_template('sgroup.html',userid=userid,info=info,form=form)
+        return render_template('sgroup.html',userid=userid,info=info,form=form, creator =uid)
     return redirect(url_for('groups',userid=udserid))   
 
 @app.route('/joingroup/<int:userid>',methods=['GET', 'POST'])                
@@ -346,6 +346,7 @@ def dgroupcom(userid):
         comm = request.form['usr_text']
         g_id = request.form.get('Encrypt')
         p_id = request.form.get('Postid')
+        g_owner = request.form.get('gOwner')
 
 
         cur = mysql.connection.cursor()
@@ -399,7 +400,7 @@ def dgroupcom(userid):
         #cur = mysql.connection.cursor()
         #cur.execute("INSERT INTO joins(user_id, group_id, join_date) VALUES (%s ,%s, %s)", (userid, g_id,joindate))
         #mysql.connection.commit()
-        return render_template('dgroup.html', form = form, pos_t=info,userid=userid)  
+        return render_template('dgroup.html', form = form, pos_t=info, userid=int(userid), creator = int(g_owner))  
 
     elif request.method =='GET':
         print(" ")
@@ -411,7 +412,7 @@ def dgroupcom(userid):
 def dgroup(userid):
     if request.method =='POST':
         g_id = request.form.get('Encrypt')
-
+        g_owner = request.form.get('gOwner')
         cur = mysql.connection.cursor()
 
         cur.execute("SELECT post_id FROM belongs WHERE group_id={}".format(g_id))
@@ -455,7 +456,8 @@ def dgroup(userid):
         #cur = mysql.connection.cursor()
         #cur.execute("INSERT INTO joins(user_id, group_id, join_date) VALUES (%s ,%s, %s)", (userid, g_id,joindate))
         #mysql.connection.commit()
-        return render_template('dgroup.html', form = form, pos_t=info,userid=userid)  
+        print("DGROUP", g_owner)
+        return render_template('dgroup.html', form = form, pos_t=info,userid=int(userid), creator = int(g_owner))  
 
     elif request.method =='GET':
         print(" ")
@@ -541,11 +543,16 @@ def pluseditors(userid):
         c_d=  datetime.today().strftime('%Y-%m-%d')
 
         cur = mysql.connection.cursor()
+        cur.execute("SELECT count(editor_id) FROM creates WHERE editor_id ={} and group_id ={} and user_id ={}".format(userid, gid, userid))
+        result=cur.fetchall()
+        ownercheck = result[0][0]
+        if ownercheck == 0:
+            flash('Only not the creator of this Group!!!!!!')
+            return redirect(url_for('groups', userid = userid))
+
         cur.execute("SELECT count(editor_id) FROM creates WHERE editor_id ={} and group_id ={} and user_id ={}".format(editid, gid, userid))
         result=cur.fetchall()
         count = result[0][0]
-
-        
         if count < 1:
             cur.execute("INSERT INTO creates(editor_id,group_id,user_id,create_date) VALUES ({},{},{},'{}')".format(editid,gid,userid,c_d))
         mysql.connection.commit()
@@ -566,12 +573,13 @@ def mygroups(userid):
         g_name=my_result[0][0]
         cur.execute("SELECT user_id, firstname,lastname FROM User WHERE user_id in (SELECT user_id FROM creates WHERE group_id ={})".format(gid))
         my_result=cur.fetchall()
-        gowner_id,fn_ame, ln_ame=my_result[0]
+        gowner_id, fn_ame, ln_ame=my_result[0]
         info.append((gid,g_name,gdate,fn_ame,ln_ame,))
     mysql.connection.commit()
     info.sort(key=lambda x:x[1])
     form = GroupForm() 
-    return render_template('mygroups.html', userid = userid,info=info,form=form)
+    print(("MYGROUP", gowner_id))
+    return render_template('mygroups.html', userid = userid,info=info,form=form, creator = gowner_id)
 
 @app.route('/aboutuserid/<int:userid>')
 def aboutuserid(userid):

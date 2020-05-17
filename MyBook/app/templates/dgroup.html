@@ -5,11 +5,12 @@
 
 <h1>{{pos_t[-1]}}'s Group Post(s)<h1>
 
-
-<form action="{{ url_for('seditors',userid=userid) }}" method="post">
-<input type="hidden" value={{pos_t[-2]}} name="Encrypt"/>
-<button type="submit" name="submit" class="btn btn-primary btn-block">Add Content Editors</button>
-</form>
+{%if creator in [userid] %}
+	<form action="{{ url_for('seditors',userid=userid) }}" method="post">
+	<input type="hidden" value={{pos_t[-2]}} name="Encrypt"/>
+	<button type="submit" name="submit" class="btn btn-primary btn-block">Add Content Editors</button>
+	</form>
+{% endif %}
 
 
 <br>
@@ -29,6 +30,7 @@
 
         <input type="hidden" value={{pos_t[-2]}} name="Encrypt"/>
         <input type="hidden" value={{i[0]}} name="Postid"/>
+        <input type="hidden" value={{creator}} name="gOwner"/>
 
         <!-- <input type="hidden" id="status" name="status" value={{i[3]}}/> -->
       </div>
