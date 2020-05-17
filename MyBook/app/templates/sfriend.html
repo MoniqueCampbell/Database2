@@ -9,6 +9,15 @@
 	<img src="{{url_for('static',filename="" + i[3]) }}"/>
 
 	<p>{{i[1]}} {{i[2]}}</p>
+
+
+	<form action="{{ url_for('vfrenprofile',userid=userid) }}" method="post">
+		<input type="hidden" value={{i[0]}} name="Friendid"/> 
+		<button type="submit" name="submit" class="btn btn-primary btn-block">View Profile 
+		</button>
+	</form>
+
+	
 	<form action="{{ url_for('addfriend',userid=userid) }}" method="post">
     {{ form.csrf_token}}
       <div class="form-group">

@@ -805,8 +805,6 @@ def cpost(userid):
 def vfrenprofilecom(userid):
     if request.method == 'POST':
         
-
-
         comdate = datetime.today().strftime('%Y-%m-%d')
         comtime = datetime.now().strftime("%H:%M:%S")
 
@@ -825,36 +823,12 @@ def vfrenprofilecom(userid):
         mysql.connection.commit()
 
         cur = mysql.connection.cursor()
-        cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(frenid))
-        result=cur.fetchall()
-        post_ids=result
-        print((frenid,post_ids))
-        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(frenid))
-        posts=cur.fetchall()
-
-        info = []
-        for post in posts:
-            doc =[]
-            pid, des, date, time = post
-            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
-            images = cur.fetchall()
-            pics = []
-            for image in images:
-                dr = image[0]
-                pics.append(dr)
-
-
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
-            comments = cur.fetchall()
-            words = []
-            for comment in comments:
-                cr = comment
-                words.append(cr)    
-
-
-            doc = [pid, des, date, time, pics, words]       
-            info.append(doc)
-
+        #cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(frenid))
+        #result=cur.fetchall()
+        #post_ids=result
+        #print((frenid,post_ids))
+        #cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(frenid))
+        #posts=cur.fetchall()
         cur.execute("SELECT firstname, lastname, email FROM User WHERE user_id={}".format(frenid))
         result=cur.fetchall()
         fren_user = result[0]
@@ -879,29 +853,15 @@ def vfrenprofilecom(userid):
                     result=cur.fetchall()
                     dire = result[0][0]
 
-        mysql.connection.commit()
-        form = Addcom_PostForm()
-        #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
-
-        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image=dire)
-    return redirect(url_for('vfrenprofile', userid = userid))
-
-
-@app.route('/vfrenprofile/<int:userid>',methods=['GET','POST'])
-def vfrenprofile(userid):
-    if request.method == 'POST':
-        #frenid = request.form.get("Frendid")
-        frenid = request.form["Friendid"]
-        cur = mysql.connection.cursor()
-
-        cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(frenid))
-        result=cur.fetchall()
-        post_ids=result
-        print((frenid,post_ids))
-        cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(frenid))
-        posts=cur.fetchall()
+        cur.execute("Call view_firends_profile_post({}, {})".format(userid,frenid))
+        posts = cur.fetchall()
 
         info = []
+
+        if len(posts) == 0:
+            form = Addcom_PostForm()
+            return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image=dire)
+
         for post in posts:
             doc =[]
             pid, des, date, time = post
@@ -924,6 +884,28 @@ def vfrenprofile(userid):
             doc = [pid, des, date, time, pics, words]       
             info.append(doc)
 
+
+        mysql.connection.commit()
+        form = Addcom_PostForm()
+        #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
+
+        return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image=dire)
+    return redirect(url_for('vfrenprofile', userid = userid))
+
+
+@app.route('/vfrenprofile/<int:userid>',methods=['GET','POST'])
+def vfrenprofile(userid):
+    if request.method == 'POST':
+        #frenid = request.form.get("Frendid")
+        frenid = request.form["Friendid"]
+        cur = mysql.connection.cursor()
+
+        #cur.execute("SELECT post_id FROM Submits WHERE user_id={}".format(frenid))
+        #result=cur.fetchall()
+        #post_ids=result
+        #print((frenid,post_ids))
+        #cur.execute("SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in (SELECT post_id FROM Submits WHERE user_id={}) ORDER BY post_date DESC, post_time DESC".format(frenid))
+        #posts=cur.fetchall()
         cur.execute("SELECT firstname, lastname, email FROM User WHERE user_id={}".format(frenid))
         result=cur.fetchall()
         fren_user = result[0]
@@ -931,6 +913,7 @@ def vfrenprofile(userid):
         cur.execute("SELECT nickname, gender, dob, profile_id FROM Profile WHERE user_id={}".format(frenid))
         result=cur.fetchall()
         fren_profile = result[0]
+        profile1id = fren_profile[3]
         dire=""
         if len(result)>0:
             profile1id = fren_profile[3]
@@ -947,12 +930,45 @@ def vfrenprofile(userid):
                     result=cur.fetchall()
                     dire = result[0][0]
 
+        cur.execute("Call view_firends_profile_post({}, {})".format(userid,frenid))
+        posts = cur.fetchall()
+
+        info = []
+        
+        if len(posts) == 0:
+            form = Addcom_PostForm()
+            return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image=dire)
+
+        for post in posts:
+            doc =[]
+            pid, des, date, time = post
+            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
+            images = cur.fetchall()
+            pics = []
+            for image in images:
+                dr = image[0]
+                pics.append(dr)
+
+
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            comments = cur.fetchall()
+            words = []
+            for comment in comments:
+                cr = comment
+                words.append(cr)    
+
+
+            doc = [pid, des, date, time, pics, words]       
+            info.append(doc)
+
+
         mysql.connection.commit()
         form = Addcom_PostForm()
         #return render_template('vpost.html', form = form,pos_t=info,userid=userid)
 
         return render_template('vfrenprofile.html', userid=userid, pos_t=info, form=form, fid = frenid, fruser =fren_user, frprofile= fren_profile, image= dire)
     return redirect(url_for('vfrenprofile', userid = userid))
+
 
 @app.route('/vpost/<int:userid>', methods=['GET', 'POST'])
 def vpost(userid):
