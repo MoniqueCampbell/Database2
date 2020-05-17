@@ -457,7 +457,10 @@ def dgroup(userid):
         #cur.execute("INSERT INTO joins(user_id, group_id, join_date) VALUES (%s ,%s, %s)", (userid, g_id,joindate))
         #mysql.connection.commit()
         print("DGROUP", g_owner)
-        return render_template('dgroup.html', form = form, pos_t=info,userid=int(userid), creator = int(g_owner))  
+        if g_owner:
+            g_owner = int(g_owner)
+
+        return render_template('dgroup.html', form = form, pos_t=info,userid=int(userid), creator = g_owner)  
 
     elif request.method =='GET':
         print(" ")
@@ -559,6 +562,84 @@ def pluseditors(userid):
         return redirect(url_for('groups', userid = userid))
     return redirect(url_for('groups', userid = userid))
 
+@app.route('/pfeed/<int:userid>', methods=['GET', 'POST'])
+def pfeed(userid):  
+    if request.method == 'GET':
+    
+        cur = mysql.connection.cursor()
+
+        cur.execute("Call all_friends_postid({})".format(userid))
+        posts = cur.fetchall()
+
+        # if len(posts) == 0: 
+        #     result = "('A')"
+        # else:
+        #     result ="("
+        #     for el in posts:
+        #         result += str(el[0])+","
+        #     result = result[:-1]
+        #     result += ")"
+
+        # query = "SELECT post_id,description,post_date,post_time FROM Post WHERE post_id in {} ORDER BY post_date DESC, post_time DESC".format(result)
+        #print((result, query))
+
+        #cur.execute(query)
+        #posts=cur.fetchall()
+        
+        info = []
+        #if no posts then render without no info
+        if len(posts) == 0:
+            form = Addcom_PostForm()
+            return render_template('pfeed.html', form = form,pos_t=info, userid=userid)
+
+        for post in posts:
+            doc =[]
+            pid, des, date, time = post
+            cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
+            images = cur.fetchall()
+            pics = []
+            for image in images:
+                dr = image[0]
+                pics.append(dr)
+
+
+            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            comments = cur.fetchall()
+            words = []
+            for comment in comments:
+                cr = comment
+                words.append(cr)    
+
+
+            doc = [pid, des, date, time, pics, words]       
+            info.append(doc)
+        mysql.connection.commit()
+        form = Addcom_PostForm()
+        return render_template('pfeed.html', form = form,pos_t=info, userid=userid)
+
+    form = Addcom_PostForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        cur = mysql.connection.cursor()
+        us_rtext = request.form['usr_text']
+        p_id = request.form['pi_d']
+        comdate = datetime.today().strftime('%Y-%m-%d')
+        comtime = datetime.now().strftime("%H:%M:%S")
+
+        #cur.execute("INSERT INTO Comment(post_id,usr_text,com_date,com_time) VALUES (%s,%s,%s,%s)", (p_id,us_rtext,comdate,comtime)) 
+        cur.execute("INSERT INTO Comment(post_id,usr_text,com_date,com_time) VALUES ({},'{}','{}','{}')".format(p_id,us_rtext,comdate,comtime))
+        #print("INSERT INTO Comment(post_id,usr_text,com_date,com_time) VALUES ({},'{}','{}','{}')".format(p_id,us_rtext,comdate,comtime))
+        mysql.connection.commit()
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT com_id FROM Comment WHERE com_date='{}' AND com_time='{}' AND usr_text='{}'".format(comdate,comtime,us_rtext))
+        co_result=cur.fetchall()
+        comid = co_result[0][0]
+        cur.execute("INSERT INTO Commented(user_id,com_id,post_id) VALUES (%s,%s,%s)", (userid,comid,p_id)) 
+        mysql.connection.commit()
+
+        return redirect(url_for('pfeed',userid=userid))
+    return redirect(url_for('profileuserid', userid = userid))
+
+
 @app.route('/mygroups/<int:userid>')
 def mygroups(userid):
     cur = mysql.connection.cursor()
@@ -580,6 +661,7 @@ def mygroups(userid):
     form = GroupForm() 
     print(("MYGROUP", gowner_id))
     return render_template('mygroups.html', userid = userid,info=info,form=form, creator = gowner_id)
+    #return render_template('mygroups.html', userid = userid,info=info,form=form)
 
 @app.route('/aboutuserid/<int:userid>')
 def aboutuserid(userid):
