@@ -12,7 +12,6 @@
 	<form action="{{ url_for('dgroup',userid=userid) }}" method="post">
     {{ form.csrf_token}}
       <div class="form-group">
-
 	<input type="hidden" value={{i[0]}} name="Encrypt"/>
 	<input type="submit" value="View Group" name="Decrypt"/>
 	

@@ -9,7 +9,9 @@ import os
 from app import app
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
-from .forms import RegForm, LoginForm, ModAboutForm, gen, AdminForm, CPostForm, UppForm, Addcom_PostForm, SearchForm, AddFriendForm, CGroupForm, GroupForm
+from .forms import RegForm, LoginForm, ModAboutForm, gen, AdminForm
+from .forms import CPostForm, UppForm, Addcom_PostForm, SearchForm, AddFriendForm, CGroupForm
+from .forms import GroupForm, ACESearchForm
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import pymsgbox
@@ -476,7 +478,7 @@ def cgroup(userid):
         g_result=cur.fetchall()
         g_id=g_result[0][0]
         c_d=  datetime.today().strftime('%Y-%m-%d')
-        print('GID: '+str(g_id))
+       
         cur.execute("INSERT INTO creates(editor_id,group_id,user_id,create_date) VALUES (%s,%s,%s,%s)", (userid,g_id,userid,c_d))
         cur.execute("INSERT INTO joins(user_id,group_id,join_date) VALUES (%s,%s,%s)", (userid,g_id,c_d))
         
@@ -484,6 +486,71 @@ def cgroup(userid):
         flash('Group successfully created!','success')
         return redirect(url_for('mygroups', userid = userid))
     return redirect(url_for('profileuserid', userid = userid))
+
+
+
+@app.route('/seditors/<int:userid>', methods=['GET', 'POST'])
+def seditors(userid):
+    if request.method == 'POST':
+        
+        gid = request.form['Encrypt']
+        form =  ACESearchForm()
+        return render_template('aceditors.html', form = form, userid=userid, groupid = gid)
+    return render_template('groups.html', userid = userid)
+
+
+@app.route('/aceditors/<int:userid>', methods=['GET', 'POST'])
+def aceditors(userid):
+    if request.method == 'GET':
+        gid = request.form['Encrypt']
+        form =  ACESearchForm()
+        return render_template('aceditors.html', form = form, userid=userid, groupid = gid)
+
+    form = ACESearchForm()
+    if request.method == 'POST':
+        acesearch = request.form['acesearchbar']
+        gid = request.form['Groupid']
+        
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT user_id,firstname,lastname FROM User WHERE firstname LIKE '%{}%' OR lastname LIKE '%{}%'".format(acesearch,acesearch))
+        result=cur.fetchall()
+
+        profiles = []
+        for r in result:
+            uid, first, last = r
+            cur.execute("SELECT directory FROM Image where image_id in (SELECT image_id FROM Profile_pic where profile_id in (SELECT profile_id FROM Profile where user_id = {}))".format(uid))
+            p = cur.fetchall()
+            photo = ""
+            if len(p)>0:
+                photo = p[0][0]
+            if userid != uid:
+                profiles.append((uid, first, last, photo))
+        profiles.sort(key=lambda x:x[2])
+        profiles.sort(key=lambda x:x[1])
+
+        mysql.connection.commit()
+
+        return render_template('availeditors.html',form=form,userid=userid,editor_info=profiles, groupid = gid)
+    return render_template('groups.html', userid = userid)
+        
+@app.route('/pluseditors/<int:userid>', methods=['GET', 'POST'])
+def pluseditors(userid):
+    if request.method =='POST':
+        editid = request.form.get('Encrypt')
+        gid = request.form['Groupid']
+        c_d=  datetime.today().strftime('%Y-%m-%d')
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT count(editor_id) FROM creates WHERE editor_id ={} and group_id ={} and user_id ={}".format(editid, gid, userid))
+        result=cur.fetchall()
+        count = result[0][0]
+
+        
+        if count < 1:
+            cur.execute("INSERT INTO creates(editor_id,group_id,user_id,create_date) VALUES ({},{},{},'{}')".format(editid,gid,userid,c_d))
+        mysql.connection.commit()
+        return redirect(url_for('groups', userid = userid))
+    return redirect(url_for('groups', userid = userid))
 
 @app.route('/mygroups/<int:userid>')
 def mygroups(userid):

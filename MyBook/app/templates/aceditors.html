@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id = "holder">
+
+<h1>Add Content Editor(s)</h1>
+
+<form action="{{ url_for('aceditors',userid=userid) }}" method="post">
+{{ form.csrf_token}}
+      <div class="form-group">
+        {{ form.acesearchbar(class='form-control', placeholder="Search for content editor")}}
+      </div>
+    <input type="hidden" value={{groupid}} name="Groupid"/>
+	<button type="submit" name="submit" class="btn btn-primary btn-block">Search</button>
+	</form>
+
+{% endblock %}

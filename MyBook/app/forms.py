@@ -57,3 +57,6 @@ class CGroupForm(FlaskForm):
 class GroupForm(FlaskForm):
     groupsearch = StringField('')
     aesearch = StringField('Add Editor Search')
+
+class ACESearchForm(FlaskForm):
+    acesearchbar = StringField('Content Editor Search')

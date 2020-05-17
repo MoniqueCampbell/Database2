@@ -6,6 +6,13 @@
 <h1>{{pos_t[-1]}}'s Group Post(s)<h1>
 
 
+<form action="{{ url_for('seditors',userid=userid) }}" method="post">
+<input type="hidden" value={{pos_t[-2]}} name="Encrypt"/>
+<button type="submit" name="submit" class="btn btn-primary btn-block">Add Content Editors</button>
+</form>
+
+
+<br>
 {%for i in pos_t[:-2]%}
 	{%for m in i[4]%}
 		<img src="{{url_for('static',filename="" + m) }}"/>
