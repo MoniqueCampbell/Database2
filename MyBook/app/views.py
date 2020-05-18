@@ -1206,6 +1206,89 @@ def admin():
     flash('Unauthorized', 'success')
     return render_template('admin.html', dire = dire, form = form, userid=10**12)
 
+
+
+@app.route('/freport')
+def freport():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT user_id FROM User")
+    result=cur.fetchall()
+    num=len(result)
+    n=range(num)
+    info=[]
+    repdate = datetime.today().strftime('%Y-%m-%d')
+    reptime = datetime.now().strftime("%H:%M:%S")
+    for p in n:
+        user_id=result[p][0]
+        cur.execute("SELECT COUNT(DISTINCT(friend_id)) FROM friends_with WHERE user_id={}".format(user_id))
+        fids=cur.fetchall()
+        idff=fids[0][0]
+        cur.execute("SELECT firstname,lastname FROM User WHERE user_id={}".format(user_id))
+        nun=cur.fetchall()
+        fname=nun[0][0]
+        lname=nun[0][1]
+        info.append((user_id,fname,lname,idff))
+
+    return render_template('freport.html',info=info,d=repdate,t=reptime)
+
+
+
+@app.route('/greport')
+def greport():
+    fin=0
+    repdate = datetime.today().strftime('%Y-%m-%d')
+    reptime = datetime.now().strftime("%H:%M:%S")
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT user_id FROM User")
+    result=cur.fetchall()
+    num=range(len(result))
+    info=[]
+
+    for p in num:
+        user_id=result[p][0]
+        cur.execute("SELECT firstname,lastname FROM User WHERE user_id={}".format(user_id))
+        names=cur.fetchall()
+        fname=names[0][0]
+        lname=names[0][1]
+        cur.execute("SELECT COUNT(DISTINCT(group_id)) FROM creates WHERE user_id={}".format(user_id))
+        fids=cur.fetchall()
+        idff=fids[0][0]
+        cur.execute("SELECT group_id FROM creates WHERE user_id={}".format(user_id))
+        gids=cur.fetchall()
+        for y in range(len(gids)):
+            cur.execute("SELECT COUNT(DISTINCT(user_id)) FROM joins WHERE group_id={}".format(gids[y][0]))
+            numusers=cur.fetchall()
+            fin+=numusers[0][0]
+        info.append((result[p][0],fname,lname,idff,fin))
+        fin=0
+    return render_template('greport.html',info=info,d=repdate,t=reptime)
+
+@app.route('/preport')
+def preport():
+    fin=0
+    repdate = datetime.today().strftime('%Y-%m-%d')
+    reptime = datetime.now().strftime("%H:%M:%S")
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT user_id FROM User")
+    result=cur.fetchall()
+    num=range(len(result))
+    info=[]
+
+    for p in num:
+        user_id=result[p][0]
+        cur.execute("SELECT firstname,lastname FROM User WHERE user_id={}".format(user_id))
+        names=cur.fetchall()
+        fname=names[0][0]
+        lname=names[0][1]
+        cur.execute("SELECT COUNT(DISTINCT(post_id)) FROM Submits WHERE user_id={}".format(user_id))
+        pids=cur.fetchall()
+        pdff=pids[0][0]
+        cur.execute("SELECT COUNT(DISTINCT(com_id)) FROM Commented WHERE user_id={}".format(user_id))
+        comid=cur.fetchall()
+        info.append((result[p][0],fname,lname,pdff,comid[0][0]))
+
+    return render_template('preport.html',info=info,d=repdate,t=reptime)
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
