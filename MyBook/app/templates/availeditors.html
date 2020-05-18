@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id = "holder">
+
+<h1>Search Result(s) for Content Editor(s)<h1>
+
+{%for i in editor_info%}
+	<img src="{{url_for('static',filename="" + i[3]) }}"/>
+
+	<p>{{i[1]}} {{i[2]}}</p> <form action="{{ url_for('pluseditors',userid=userid) }}" method="post">
+    {{ form.csrf_token}}
+      <div class="form-group">
+
+	<input type="hidden" value={{i[0]}} name="Encrypt"/>
+	<input type="hidden" value={{groupid}} name="Groupid"/> 
+
+	<button type="submit" name="submit" class="btn btn-primary btn-block">Add as a Content Editors</button>
+	
+</div>
+</form>
+{%endfor%}
+{% endblock %}

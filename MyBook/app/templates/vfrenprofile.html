@@ -22,7 +22,7 @@
 		<img src="{{url_for('static',filename="" + m) }}"/>
 
 	{%endfor%} 
-	<p>Description: {{i[1]}} {{i[2]}} {{i[3]}}</p>
+	<p>Description: {{i[1]}} {{i[2]}} {{i[3]}} <br> {{i[6]}} </p>
 
 	<form action="{{ url_for('vfrenprofilecom',userid=userid) }}" method="post">
   	{{ form.csrf_token}}
@@ -36,7 +36,7 @@
 	</form>
 
 	{%for w in i[5]%}
-		<p>{{w[0]}} {{w[1]}} {{w[2]}}</p>
+		<p>{{w[0]}} {{w[1]}} {{w[2]}} {{w[4]}} {{w[5]}}</p>
 	{%endfor%}
 
 {%endfor%} 

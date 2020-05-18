@@ -1,3 +1,9 @@
-<div id = "holder">
+{% extends "base-login.html" %}
 
-<h1>ADMIN</h1>
+{% block main %}
+  <h1 class="page-header">Admin</h1>
+    {% include 'flash_messages.html' %}
+    <a href="{{url_for('freport')}}" class="btn btn-primary btn-block">Friend(s) Report</a>
+    <a href="{{url_for('greport')}}" class="btn btn-primary btn-block">Group(s) Report</a>
+    <a href="{{url_for('preport')}}" class="btn btn-primary btn-block">Post(s) Report</a>
+{% endblock %}

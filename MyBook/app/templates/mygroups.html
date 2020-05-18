@@ -7,14 +7,14 @@
 
 {%for i in info%}
 
-	<p>{{i[1]}} </p><br><p>Created By: {{i[3]}} {{i[4]}}</p>
+	<p> {{i[1]}} </p><br><p>Created By: {{i[3]}} {{i[4]}}</p>
 	<p>Created On: {{i[2]}}</p>
 	<form action="{{ url_for('dgroup',userid=userid) }}" method="post">
     {{ form.csrf_token}}
       <div class="form-group">
-
 	<input type="hidden" value={{i[0]}} name="Encrypt"/>
 	<input type="submit" value="View Group" name="Decrypt"/>
+	<input type="hidden" value={{creator}} name="gOwner"/>
 	
 </div>
 </form>
