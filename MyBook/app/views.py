@@ -445,20 +445,34 @@ def dgroup(userid):
             pid, des, date, time = post
             cur.execute("SELECT directory FROM Image WHERE image_id in (Select image_id FROM post_image where  post_id = {})".format(pid))
             images = cur.fetchall()
+
+
+            #get user that made the post
+            cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (SELECT user_id FROM Submits WHERE post_id={})".format(pid))
+            result1=cur.fetchall()
+            pfn, pln = result1[0]
+
+
             pics = []
             for image in images:
                 dr = image[0]
                 pics.append(dr)
 
 
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            cur.execute("SELECT usr_text, com_date, com_time, com_id FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
             comments = cur.fetchall()
             words = []
             for comment in comments:
-                cr = comment
-                words.append(cr)    
+                ut, cd, ct, cid = comment
+            
+                #get user that made the comment
+                cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (SELECT user_id FROM Commented WHERE com_id={})".format(cid))
+                result=cur.fetchall()
+                fn, ln = result[0]
 
-            doc = [pid, des, date, time, pics, words]       
+                words.append((ut, cd, ct, cid, fn, ln))
+
+            doc = [pid, des, date, time, pfn, pln, pics, words]       
             info.append(doc)
 
         cur.execute("SELECT group_name FROM Group1 WHERE group_id={}".format(g_id))
@@ -620,23 +634,36 @@ def pfeed(userid):
                 dr = image[0]
                 pics.append(dr)
 
+            cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (Select user_id FROM Submits where post_id = {})".format(pid))
+            name = cur.fetchall()
+            pfn, pln = name[0]
 
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            cur.execute("SELECT group_name FROM Group1 WHERE group_id in (Select group_id FROM belongs where post_id = {})".format(pid))
+            gname = cur.fetchall()
+            gn = gname[0][0]
+
+            cur.execute("SELECT usr_text, com_date, com_time, com_id FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
             comments = cur.fetchall()
             words = []
             for comment in comments:
-                cr = comment
-                words.append(cr)    
+                ut, cd, ct, cid = comment
+            
+                #get user that made the comment
+                cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (SELECT user_id FROM Commented WHERE com_id={})".format(cid))
+                result=cur.fetchall()
+                fn, ln = result[0]
+
+                words.append((ut, cd, ct, cid, fn, ln))    
 
 
-            doc = [pid, des, date, time, pics, words]       
+            doc = [pid, des, date, time, pics, words, pfn, pln, gn]       
             info.append(doc)
         mysql.connection.commit()
         form = Addcom_PostForm()
         return render_template('pfeed.html', form = form,pos_t=info, userid=userid)
 
-    form = Addcom_PostForm()
-    if request.method == 'POST' and form.validate_on_submit():
+    #form = Addcom_PostForm()
+    if request.method == 'POST':
         cur = mysql.connection.cursor()
         us_rtext = request.form['usr_text']
         p_id = request.form['pi_d']
@@ -653,7 +680,6 @@ def pfeed(userid):
         comid = co_result[0][0]
         cur.execute("INSERT INTO Commented(user_id,com_id,post_id) VALUES (%s,%s,%s)", (userid,comid,p_id)) 
         mysql.connection.commit()
-
         return redirect(url_for('pfeed',userid=userid))
     return redirect(url_for('profileuserid', userid = userid))
 
@@ -891,15 +917,26 @@ def vfrenprofilecom(userid):
                 pics.append(dr)
 
 
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            cur.execute("SELECT group_name FROM Group1 WHERE group_id in (Select group_id FROM belongs where  post_id = {})".format(pid))
+            gname = cur.fetchall()
+            gname = gname[0][0]
+
+
+            cur.execute("SELECT usr_text, com_date, com_time, com_id FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
             comments = cur.fetchall()
             words = []
             for comment in comments:
-                cr = comment
-                words.append(cr)    
+                ut, cd, ct, cid = comment
+            
+                #get user that made the comment
+                cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (SELECT user_id FROM Commented WHERE com_id={})".format(cid))
+                result=cur.fetchall()
+                fn, ln = result[0]
+
+                words.append((ut, cd, ct, cid, fn, ln))    
 
 
-            doc = [pid, des, date, time, pics, words]       
+            doc = [pid, des, date, time, pics, words, gname]       
             info.append(doc)
 
 
@@ -967,16 +1004,25 @@ def vfrenprofile(userid):
                 dr = image[0]
                 pics.append(dr)
 
+            cur.execute("SELECT group_name FROM Group1 WHERE group_id in (Select group_id FROM belongs where  post_id = {})".format(pid))
+            gname = cur.fetchall()
+            gname = gname[0][0]
 
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            cur.execute("SELECT usr_text, com_date, com_time, com_id FROM Comment WHERE com_id in (Select com_id FROM Commented where  post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
             comments = cur.fetchall()
             words = []
             for comment in comments:
-                cr = comment
-                words.append(cr)    
+                ut, cd, ct, cid = comment
+            
+                #get user that made the comment
+                cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (SELECT user_id FROM Commented WHERE com_id={})".format(cid))
+                result=cur.fetchall()
+                fn, ln = result[0]
+
+                words.append((ut, cd, ct, cid, fn, ln))    
 
 
-            doc = [pid, des, date, time, pics, words]       
+            doc = [pid, des, date, time, pics, words, gname]       
             info.append(doc)
 
 
@@ -1014,15 +1060,24 @@ def vpost(userid):
                 pics.append(dr)
 
 
-            cur.execute("SELECT usr_text, com_date, com_time FROM Comment WHERE com_id in (Select com_id FROM Commented where post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
+            cur.execute("SELECT group_name FROM GROUP1 where group_id in (SELECT group_id FROM belongs where post_id= {})".format(pid))
+            gp = cur.fetchall()
+            print(("GGGGGGGGG", gp))
+            gn = gp[0][0]
+
+            cur.execute("SELECT usr_text, com_date, com_time, com_id FROM Comment WHERE com_id in (Select com_id FROM Commented where post_id = {}) ORDER BY com_date DESC, com_time DESC".format(pid))
             comments = cur.fetchall()
             words = []
             for comment in comments:
-                cr = comment
-                words.append(cr)    
+                ut, cd, ct, cid = comment
+                #get user that made the comment
+                cur.execute("SELECT firstname, lastname FROM User WHERE user_id in (SELECT user_id FROM Commented WHERE com_id={})".format(cid))
+                result=cur.fetchall()
+                fn, ln = result[0]
+                words.append((ut, cd, ct, cid, fn, ln))    
 
 
-            doc = [pid, des, date, time, pics, words]       
+            doc = [pid, des, date, time, pics, words, gn]       
             info.append(doc)
         mysql.connection.commit()
         form = Addcom_PostForm()
