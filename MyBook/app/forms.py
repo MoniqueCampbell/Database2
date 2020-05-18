@@ -3,6 +3,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import TextAreaField, TextField, SelectField, StringField, PasswordField, HiddenField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, InputRequired, Required
 from wtforms.fields.html5 import DateField
+from wtforms import (SubmitField, SelectMultipleField, widgets)
 
 coun= [('Afghanistan','Afghanistan') , ('Albania','Albania') , ('Algeria','Algeria') , ('Andorra','Algeria') , ('Angola','Angola') , ('Antigua and Barbuda','Antigua and Barbuda') , ('Argentina','Argentina') , ('Armenia','Armenia') , ('Australia','Australia') , ('Austria','Austria') , ('Azerbaijan','Azerbaijan') , ('Bahamas','Bahamas') , ('Bahrain','Bahrain') , ('Bangladesh','Bangladesh') , ('Barbados','Barbados') , ('Belarus','Belarus') , ('Belgium','Belgium') , ('Belize','Belize') , ('Benin','Benin') , ('Bhutan','Bhutan') , ('Bolivia','Bolivia') , ('Bosnia and Herzegovina','Bosnia and Herzegovina') , ('Botswana','Botswana') , ('Brazil','Brazil') , ('Brunei','Brunei') , ('Bulgaria','Bulgaria') , ('Burkina Faso','Burkina Faso') , ('Burundi','Burundi') , ('Denmark','Denmark') , ('Djibouti','Djibouti') , ('Dominica','Dominica') , ('Dominican Republic','Dominican Republic') , ('Ecuador','Ecuador') , ('Egypt','Egypt') , ('El Salvador','El Salvador') , ('Equatorial Guinea','Equatorial Guinea') , ('Eritrea','Eritrea') , ('Estonia','Estonia') , ('Eswatini (formerly Swaziland)','Eswatini (formerly Swaziland)') , ('Ethiopia','Ethiopia') , ('Fiji','Fiji') , ('Finland','Finland') , ('France','France') , ('Gabon','Gabon') , ('Gambia','Gambia') , ('Georgia','Georgia') , ('Germany','Germany') , ('Ghana','Ghana') , ('Greece','Greece') , ('Grenada','Grenada') , ('Guatemala','Guatemala') , ('Guinea','Guinea') ]
 # ('Guinea-Bissau'.'Guinea-Bissau') , ('Guyana','Guyana') , ('Haiti','Haiti') , ('Honduras','Honduras') , ('Hungary','Hungary') , ('Iceland','Iceland') , ('India','India') , ('Indonesia','Indonesia') , ('Iran','Iran') , ('Iraq','Iraq') , ('Ireland','Ireland') , ('Israel','Israel') , ('Italy','Italy') , ('Jamaica','Jamaica') , ('Japan','Japan') , ('Jordan','Jordan') , ('Kazakhstan','Kazakhstan') , ('Kenya','Kenya') , ('Kiribati','Kiribati') , ('Kosovo','Kosovo') , ('Kuwait','Kuwait') , ('Kyrgyzstan','Kyrgyzstan') , ('Laos','Laos') , ('Latvia','Latvia') , ('Lebanon','Lebanon') , ('Lesotho','Lesotho') , ('Liberia','Liberia') , ('Libya','Libya') , ('Liechtenstein','Liechtenstein') , ('Lithuania','Lithuania') , ('Luxembourg','Luxembourg') , ('Madagascar','Madagascar') , ('Malawi','Malawi') , ('Malaysia','Malaysia') , ('Maldives','Maldives') , ('Mali','Mali') , ('Malta','Malta') , ('Marshall Islands','Marshall Islands') , ('Mauritania','Mauritania') , ('Mauritius','Mauritius') , ('Mexico','Mexico') , ('Micronesia','Micronesia') , ('Moldova','Moldova') , ('Monaco','Monaco') , ('Mongolia','Mongolia') , ('Montenegro','Montenegro')  ('Morocco','Morocco')  ('Mozambique','Mozambique') , ('Myanmar (formerly Burma)','Myanmar (formerly Burma)') , ('Namibia','Namibia') , ('Nauru','Nauru') , ('Nepal','Nepal') , ('Netherlands','Netherlands') , ('New Zealand','New Zealand') , ('Nicaragua','Nicaragua') , ('Niger','Niger')]
@@ -48,9 +49,15 @@ class Addcom_PostForm(FlaskForm):
 class SearchForm(FlaskForm):
     searchbar = StringField('')
 
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
 class AddFriendForm(FlaskForm):
     f_id = HiddenField('', validators= [InputRequired()])
-    g_id = SelectMultipleField('', choices =  [('1','Relative'),('2', 'School')])
+    my_choices = [('1', 'Relative'), ('2', 'School'), ('3', 'Work')]
+    g_id = MultiCheckboxField("Select", choices = my_choices, default = ['1','2','3'], coerce=int, validators=[DataRequired()]      )
+
 class CGroupForm(FlaskForm):
     groupname = StringField('Group Name', validators= [InputRequired()])
 
